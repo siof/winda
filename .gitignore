@@ -1,5 +1,9 @@
+# codeblocks directory and files
 WIMS/
 winda.depend
+winda.layout
+
+# other
 bin/
 obj/
 *.obj

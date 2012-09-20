@@ -18,16 +18,62 @@
 #ifndef WINDA_H
 #define WINDA_H
 
+#include <iostream>
+
+enum TrybRuchu
+{
+    RUCH_STOP   = 0,
+    RUCH_GORA   = 1,
+    RUCH_DOL    = 2
+};
+
+struct Pietro
+{
+    Pietro() : wezwanie(false), wcisnieto(false) { }
+
+    bool wezwanie;
+    bool wcisnieto;
+};
+
+// class implemetation probably should be done in better way but because of not enought informations
+// and name, will be implemented as 'single' not 'multiple' - needs additional handling outside class
+// for multiple usage case
 class Winda
 {
-    public:
-        Winda(int iloscPieter);
-        ~Winda();
-        unsigned int GetaktualnePietro() { return _aktualnePietro; }
-        void SetaktualnePietro(unsigned int val) { _aktualnePietro = val; }
-    protected:
-    private:
-        unsigned int _aktualnePietro;
+public:
+    Winda(int iloscPieter);
+    ~Winda();
+
+    int GetAktualnePietro() { return _aktualnePietro; }
+    void SetAktualnePietro(int val) { _aktualnePietro = val; }
+
+    TrybRuchu GetTrybRuchu() const { return _trybRuchu; }
+    int GetIloscPieter() const { return _iloscPieter; }
+
+    void ruch();
+    bool wezwij(int skad);
+    void wcisnij(int naKtore);
+
+    bool Parter() { return _aktualnePietro == 0; }
+    bool NajwyzszePietro() { return _aktualnePietro == _iloscPieter; }
+
+    // maybe should be implemented as std::string returning function (should be better) but
+    // i don't have enought informations so was used simple and logic std::cout version (based on function name)
+    void wyswietlPietro(int ktore) const;
+
+    // this operator implemetation is determined by implementation of wyswietlPietro function
+    friend std::ostream & operator << (std::ostream & out, const Winda & winda);
+
+protected:
+private:
+    void WykonajRuch();
+    int GetOdlNajblWcisPietra(TrybRuchu ruch);
+    int GetOdlNajblWezwPietra(TrybRuchu ruch);
+
+    int _aktualnePietro;
+    int _iloscPieter;
+    TrybRuchu _trybRuchu;
+    Pietro * _pietra;
 };
 
 #endif // WINDA_H
