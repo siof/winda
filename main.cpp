@@ -19,6 +19,25 @@
 
 int main()
 {
+    Winda winda(3);
+    winda.wezwij(1);
+    winda.wcisnij(3);
+    std::cout << winda << std::endl;
+
+    winda.ruch();
+    std::cout << winda << std::endl;
+    winda.ruch();
+    std::cout << winda << std::endl;
+    winda.wezwij(1);
+    std::cout << winda << std::endl;
+    winda.ruch();
+    std::cout << winda << std::endl;
+    winda.ruch();
+    std::cout << winda << std::endl;
+    winda.ruch();
+    std::cout << winda << std::endl;
+    winda.ruch();
+    std::cout << winda << std::endl;
 
     return 0;
 }

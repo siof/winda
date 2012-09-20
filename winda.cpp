@@ -17,6 +17,8 @@
 
 #include "winda.h"
 
+#include <cstdlib>
+
 #define UNLIMITED   999999
 
 Winda::Winda(int iloscPieter)
@@ -35,25 +37,12 @@ Winda::~Winda()
 
 bool Winda::wezwij(int skad)
 {
-    // if we are in 'stop' mode or we are going in proper direction
-    switch (_trybRuchu)
-    {
-        case RUCH_STOP:
-            _pietra[skad].wezwanie = true;
-            break;
-        case RUCH_GORA:
-            if (skad > _aktualnePietro)
-                _pietra[skad].wezwanie = true;
-            break;
-        case RUCH_DOL:
-            if (skad < _aktualnePietro)
-                _pietra[skad].wezwanie = true;
-            break;
-        default:
-            break;
-    }
+    if (skad == _aktualnePietro)
+        return true;
 
-    return _pietra[skad].wezwanie;
+    _pietra[skad].wezwanie = true;
+
+    return false;
 }
 
 void Winda::wcisnij(int naKtore)
@@ -61,7 +50,35 @@ void Winda::wcisnij(int naKtore)
     _pietra[naKtore].wcisnieto = true;
 }
 
-void Winda::WykonajRuch()
+bool Winda::PoruszaSieWStrone(int pietro)
+{
+    switch (_trybRuchu)
+    {
+        case RUCH_DOL:
+            if (pietro < _aktualnePietro)
+                return true;
+            break;
+        case RUCH_GORA:
+            if (pietro > _aktualnePietro)
+                return true;
+            break;
+        // always true for not moving ;p
+        case RUCH_STOP:
+            return true;
+    }
+
+    return false;
+}
+
+bool Winda::JestBlizejNiz(int pietro, const Winda & winda)
+{
+    if (std::abs(_aktualnePietro - pietro) < std::abs(winda.GetAktualnePietro() - pietro))
+        return true;
+    else
+        return false;
+}
+
+bool Winda::WykonajRuch()
 {
     switch (_trybRuchu)
     {
@@ -76,6 +93,13 @@ void Winda::WykonajRuch()
         default:
             break;
     }
+
+    bool byloWezwanie = _pietra[_aktualnePietro].wezwanie;
+
+    _pietra[_aktualnePietro].wcisnieto = false;
+    _pietra[_aktualnePietro].wezwanie = false;
+
+    return byloWezwanie;
 }
 
 int Winda::GetOdlNajblWcisPietra(TrybRuchu ruch)
@@ -107,13 +131,13 @@ int Winda::GetOdlNajblWezwPietra(TrybRuchu ruch)
     {
         case RUCH_DOL:
              for (int i = _aktualnePietro; i >= 0; --i)
-                if (_pietra[i].wcisnieto)
+                if (_pietra[i].wezwanie)
                     return _aktualnePietro - i;
             break;
 
         case RUCH_GORA:
             for (int i = _aktualnePietro; i <= _iloscPieter; ++i)
-                if (_pietra[i].wcisnieto)
+                if (_pietra[i].wezwanie)
                     return i - _aktualnePietro;
             break;
 
@@ -124,7 +148,7 @@ int Winda::GetOdlNajblWezwPietra(TrybRuchu ruch)
     return UNLIMITED;
 }
 
-void Winda::ruch()
+bool Winda::ruch()
 {
     switch (_trybRuchu)
     {
@@ -134,13 +158,8 @@ void Winda::ruch()
                 break;
 
             for (int i = _aktualnePietro-1; i >= 0; --i)
-            {
                 if (_pietra[i].wcisnieto || _pietra[i].wezwanie)
-                {
-                    WykonajRuch();
-                    return;
-                }
-            }
+                    return WykonajRuch();
 
             break;
         }
@@ -151,13 +170,8 @@ void Winda::ruch()
                 break;
 
             for (int i = _aktualnePietro+1; i <= _iloscPieter; ++i)
-            {
                 if (_pietra[i].wcisnieto || _pietra[i].wezwanie)
-                {
-                    WykonajRuch();
-                    return;
-                }
-            }
+                    return WykonajRuch();
 
             break;
         }
@@ -191,20 +205,20 @@ void Winda::ruch()
             _trybRuchu = RUCH_GORA;
     }
 
-    WykonajRuch();
+    return WykonajRuch();
 }
 
 void Winda::wyswietlPietro(int ktore) const
 {
     std::cout << "\r";      // to have a chance to be same as print format requirements
-    std::cout << "+---+";
-    std::cout << "+ " << (_aktualnePietro == ktore ? "X" : " ") << (_pietra[ktore].wcisnieto ? ">" : " ") << "+" << (_pietra[ktore].wezwanie ? "<" : "");
+    std::cout << "+---+" << std::endl;
+    std::cout << "+ " << (_aktualnePietro == ktore ? "X" : " ") << (_pietra[ktore].wcisnieto ? ">" : " ") << "+" << (_pietra[ktore].wezwanie ? "<" : "") << std::endl;
     std::cout << "+---+";
 }
 
 std::ostream & operator << (std::ostream & out, const Winda & winda)
 {
-    for (int i = 0; i <= winda.GetIloscPieter(); ++i)
+    for (int i = winda.GetIloscPieter(); i >= 0; --i)
         winda.wyswietlPietro(i);
 
     out << "\n";

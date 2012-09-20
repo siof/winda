@@ -44,18 +44,24 @@ public:
     Winda(int iloscPieter);
     ~Winda();
 
-    int GetAktualnePietro() { return _aktualnePietro; }
+    int GetAktualnePietro() const { return _aktualnePietro; }
     void SetAktualnePietro(int val) { _aktualnePietro = val; }
 
     TrybRuchu GetTrybRuchu() const { return _trybRuchu; }
     int GetIloscPieter() const { return _iloscPieter; }
 
-    void ruch();
+    // if true - force get buttons
+    bool ruch();
+    // if true - force get buttons
     bool wezwij(int skad);
     void wcisnij(int naKtore);
 
     bool Parter() { return _aktualnePietro == 0; }
     bool NajwyzszePietro() { return _aktualnePietro == _iloscPieter; }
+
+    bool ToSamoPietro(int pietro) { return _aktualnePietro == pietro; }
+    bool PoruszaSieWStrone(int pietro);
+    bool JestBlizejNiz(int pietro, const Winda & winda);
 
     // maybe should be implemented as std::string returning function (should be better) but
     // i don't have enought informations so was used simple and logic std::cout version (based on function name)
@@ -66,7 +72,7 @@ public:
 
 protected:
 private:
-    void WykonajRuch();
+    bool WykonajRuch();
     int GetOdlNajblWcisPietra(TrybRuchu ruch);
     int GetOdlNajblWezwPietra(TrybRuchu ruch);
 
