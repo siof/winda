@@ -1,0 +1,5 @@
+WIMS/
+winda.depend
+bin/
+obj/
+*.obj
