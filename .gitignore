@@ -6,4 +6,5 @@ winda.layout
 # other
 bin/
 obj/
+build/
 *.obj

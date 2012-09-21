@@ -221,7 +221,7 @@ std::ostream & operator << (std::ostream & out, const Winda & winda)
     for (int i = winda.GetIloscPieter(); i >= 0; --i)
         winda.wyswietlPietro(i);
 
-    out << "\n";
+    out << std::endl;
 
     return out;
 }
