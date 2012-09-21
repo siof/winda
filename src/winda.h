@@ -20,20 +20,23 @@
 
 #include <iostream>
 
+// tryb ruchu windy
 enum TrybRuchu
 {
-    RUCH_STOP   = 0,
-    RUCH_GORA   = 1,
-    RUCH_DOL    = 2
+    RUCH_STOP   = 0,    // winda stoi aktualnie (calkowicie - nie postoj chwilowy)
+    RUCH_GORA   = 1,    // winda porusza sie w gore
+    RUCH_DOL    = 2     // winda porusza sie w dol
 };
 
+// typ chwilowego postoju
 enum Postoj
 {
-    POSTOJ_BRAK         = 0,
-    POSTOJ_WSADANIE     = 1,
-    POSTOJ_WYSIADANIE   = 2
+    POSTOJ_BRAK         = 0,    // niema postoju
+    POSTOJ_WSADANIE     = 1,    // postoj na wsiadanie (dla dojachania winda do miejsca wezwania windy)
+    POSTOJ_WYSIADANIE   = 2     // postoj na wysiadanie (jesli dojechalismy do miejsca wcisnietego przycisku)
 };
 
+// mala struktura przetrzymujaca informacje o wezwaniu lub wcisnietym przycisku na dane pietro
 struct Pietro
 {
     Pietro() : wezwanie(false), wcisnieto(false) { }
@@ -51,15 +54,18 @@ public:
     Winda(int iloscPieter);
     ~Winda();
 
-    int GetAktualnePietro() const { return _aktualnePietro; }
-    void SetAktualnePietro(int val) { _aktualnePietro = val; }
+    int PobierzAktualnePietro() const { return _aktualnePietro; }
+    void UstawAktualnePietro(int val) { _aktualnePietro = val; }
 
-    TrybRuchu GetTrybRuchu() const { return _trybRuchu; }
-    int GetIloscPieter() const { return _iloscPieter; }
+    TrybRuchu PobierzTrybRuchu() const { return _trybRuchu; }
+    int PobierzIloscPieter() const { return _iloscPieter; }
 
     // wykonaj ruch jednoczesnie informujac czy po wykonaniu ruchu nastepuje jakis rodzaj postoju
     Postoj ruch();
+
     // wezwij winde jednoczesnie informujac czy powinnismy wymusic obsluge wsiadania (jesli pietro jest to samo)
+    // obie funkcje wymagaja dodatkowej obslugi z zewnatrz w przypadku wcisniecia przyciskow jesli aktualnie
+    // winda jest na danym pietrze - winda poinformuje o tym
     Postoj wezwij(int skad);
     Postoj wcisnij(int naKtore);
 
@@ -92,9 +98,9 @@ private:
     Postoj WykonajRuch();
 
     // zwraca odleglosc do najblizszego wybranego pietra w danym trybie ruchu
-    int GetOdlNajblWcisPietra(TrybRuchu ruch);
+    int PobierzOdlNajblWcisPietra(TrybRuchu ruch);
     // zwraca odleglosc do najblizszego wezwanego pietra w danym trybie ruchu
-    int GetOdlNajblWezwPietra(TrybRuchu ruch);
+    int PobierzOdlNajblWezwPietra(TrybRuchu ruch);
 
     int _aktualnePietro;    // przechowuje numer aktualnego pietra
     int _iloscPieter;       // informacja o ilosci pieter

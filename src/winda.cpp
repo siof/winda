@@ -54,6 +54,8 @@ Postoj Winda::wcisnij(int naKtore)
         return POSTOJ_WYSIADANIE;
 
     _pietra[naKtore].wcisnieto = true;
+
+    return POSTOJ_BRAK;
 }
 
 bool Winda::PoruszaSieWStrone(int pietro) const
@@ -77,7 +79,7 @@ bool Winda::PoruszaSieWStrone(int pietro) const
 
 bool Winda::JestBlizejNiz(int pietro, const Winda & winda)
 {
-    if (std::abs(_aktualnePietro - pietro) < std::abs(winda.GetAktualnePietro() - pietro))
+    if (std::abs(_aktualnePietro - pietro) < std::abs(winda.PobierzAktualnePietro() - pietro))
         return true;
     else
         return false;
@@ -97,9 +99,9 @@ bool Winda::JestLepszaNiz(int pietro, const Winda & winda)
     {
         // preferujemy nie poruszajaca sie winde niz ta ktora jedzie w innym kierunku ;)
         // winda nie poruszajaca sie zwraca false przy sprawdzaniu czy porusza sie na dane pietro
-        if (GetTrybRuchu() == RUCH_STOP)
+        if (PobierzTrybRuchu() == RUCH_STOP)
             return true;
-        else if (winda.GetTrybRuchu() == RUCH_STOP)
+        else if (winda.PobierzTrybRuchu() == RUCH_STOP)
             return false;
 
         return JestBlizejNiz(pietro, winda);
@@ -142,7 +144,7 @@ Postoj Winda::WykonajRuch()
     return POSTOJ_BRAK;
 }
 
-int Winda::GetOdlNajblWcisPietra(TrybRuchu ruch)
+int Winda::PobierzOdlNajblWcisPietra(TrybRuchu ruch)
 {
     switch (ruch)
     {
@@ -165,7 +167,7 @@ int Winda::GetOdlNajblWcisPietra(TrybRuchu ruch)
     return UNLIMITED;
 }
 
-int Winda::GetOdlNajblWezwPietra(TrybRuchu ruch)
+int Winda::PobierzOdlNajblWezwPietra(TrybRuchu ruch)
 {
     switch (ruch)
     {
@@ -232,14 +234,14 @@ Postoj Winda::ruch()
     // co powinnismy teraz zrobic
 
     // pobierz dystans do najblizszych wcisnietych przyciskow
-    int najblizejGora = GetOdlNajblWcisPietra(RUCH_GORA);
-    int najblizejDol = GetOdlNajblWcisPietra(RUCH_DOL);
+    int najblizejGora = PobierzOdlNajblWcisPietra(RUCH_GORA);
+    int najblizejDol = PobierzOdlNajblWcisPietra(RUCH_DOL);
 
     // jesli zadne nie sa wcisniete sprawdzmy przyciski na pietrach
     if (najblizejDol == UNLIMITED && najblizejDol == UNLIMITED)
     {
-        najblizejGora = GetOdlNajblWezwPietra(RUCH_GORA);
-        najblizejDol = GetOdlNajblWezwPietra(RUCH_DOL);
+        najblizejGora = PobierzOdlNajblWezwPietra(RUCH_GORA);
+        najblizejDol = PobierzOdlNajblWezwPietra(RUCH_DOL);
     }
 
     // jesli znalezlismy nowy kierunek to ustawmy winde aby poruszala sie w tym kierunku
@@ -273,7 +275,7 @@ void Winda::wyswietlPietro(int ktore) const
 std::ostream & operator << (std::ostream & out, const Winda & winda)
 {
     // wyswietlamy pietra od najwyzszego do najnizszego
-    for (int i = winda.GetIloscPieter(); i >= 0; --i)
+    for (int i = winda.PobierzIloscPieter(); i >= 0; --i)
         winda.wyswietlPietro(i);
 
     // i dodajemy znak nowej linii dla pewnosci ;p
