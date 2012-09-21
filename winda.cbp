@@ -32,9 +32,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
-		<Unit filename="winda.cpp" />
-		<Unit filename="winda.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/winda.cpp" />
+		<Unit filename="src/winda.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />
