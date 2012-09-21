@@ -35,14 +35,14 @@ Winda::~Winda()
     _pietra = NULL;
 }
 
-bool Winda::wezwij(int skad)
+Postoj Winda::wezwij(int skad)
 {
     if (skad == _aktualnePietro)
-        return true;
+        return POSTOJ_WSADANIE;
 
     _pietra[skad].wezwanie = true;
 
-    return false;
+    return POSTOJ_BRAK;
 }
 
 void Winda::wcisnij(int naKtore)
@@ -50,7 +50,7 @@ void Winda::wcisnij(int naKtore)
     _pietra[naKtore].wcisnieto = true;
 }
 
-bool Winda::PoruszaSieWStrone(int pietro)
+bool Winda::PoruszaSieWStrone(int pietro) const
 {
     switch (_trybRuchu)
     {
@@ -101,7 +101,7 @@ bool Winda::JestLepszaNiz(int pietro, const Winda & winda)
         return poruszamSieWStrone;
 }
 
-bool Winda::WykonajRuch()
+Postoj Winda::WykonajRuch()
 {
     switch (_trybRuchu)
     {
@@ -118,11 +118,17 @@ bool Winda::WykonajRuch()
     }
 
     bool byloWezwanie = _pietra[_aktualnePietro].wezwanie;
+    bool bylaWysiadka = _pietra[_aktualnePietro].wcisnieto;
 
     _pietra[_aktualnePietro].wcisnieto = false;
     _pietra[_aktualnePietro].wezwanie = false;
 
-    return byloWezwanie;
+    if (byloWezwanie)
+        return POSTOJ_WSADANIE;
+    else if (bylaWysiadka)
+        return POSTOJ_WYSIADANIE;
+
+    return POSTOJ_BRAK;
 }
 
 int Winda::GetOdlNajblWcisPietra(TrybRuchu ruch)
@@ -171,7 +177,7 @@ int Winda::GetOdlNajblWezwPietra(TrybRuchu ruch)
     return UNLIMITED;
 }
 
-bool Winda::ruch()
+Postoj Winda::ruch()
 {
     switch (_trybRuchu)
     {

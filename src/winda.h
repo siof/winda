@@ -27,6 +27,13 @@ enum TrybRuchu
     RUCH_DOL    = 2
 };
 
+enum Postoj
+{
+    POSTOJ_BRAK         = 0,
+    POSTOJ_WSADANIE     = 1,
+    POSTOJ_WYSIADANIE   = 2
+};
+
 struct Pietro
 {
     Pietro() : wezwanie(false), wcisnieto(false) { }
@@ -51,16 +58,16 @@ public:
     int GetIloscPieter() const { return _iloscPieter; }
 
     // if true - force get buttons
-    bool ruch();
+    Postoj ruch();
     // if true - force get buttons
-    bool wezwij(int skad);
+    Postoj wezwij(int skad);
     void wcisnij(int naKtore);
 
     bool Parter() { return _aktualnePietro == 0; }
     bool NajwyzszePietro() { return _aktualnePietro == _iloscPieter; }
 
     bool ToSamoPietro(int pietro) { return _aktualnePietro == pietro; }
-    bool PoruszaSieWStrone(int pietro);
+    bool PoruszaSieWStrone(int pietro) const;
     bool JestBlizejNiz(int pietro, const Winda & winda);
 
     bool JestLepszaNiz(int pietro, const Winda & winda);
@@ -73,8 +80,13 @@ public:
     friend std::ostream & operator << (std::ostream & out, const Winda & winda);
 
 protected:
+
 private:
-    bool WykonajRuch();
+    // we don't want to create not existing or duplicates
+    Winda() {}
+    Winda(const Winda & winda) {}
+
+    Postoj WykonajRuch();
     int GetOdlNajblWcisPietra(TrybRuchu ruch);
     int GetOdlNajblWezwPietra(TrybRuchu ruch);
 
