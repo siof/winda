@@ -62,9 +62,8 @@ bool Winda::PoruszaSieWStrone(int pietro)
             if (pietro > _aktualnePietro)
                 return true;
             break;
-        // always true for not moving ;p
-        case RUCH_STOP:
-            return true;
+        default:
+            break;
     }
 
     return false;
@@ -76,6 +75,30 @@ bool Winda::JestBlizejNiz(int pietro, const Winda & winda)
         return true;
     else
         return false;
+}
+
+bool Winda::JestLepszaNiz(int pietro, const Winda & winda)
+{
+    // is better if is already on this floor
+    if (ToSamoPietro(pietro))
+        return true;
+
+    bool poruszamSieWStrone = PoruszaSieWStrone(pietro);
+    bool innaPoruszaSieWStrone = winda.PoruszaSieWStrone(pietro);
+
+    // if both are moving in same direction get closer
+    if (poruszamSieWStrone == innaPoruszaSieWStrone)
+    {
+        // we prefer RUCH_STOP than moving in other direction ;)
+        if (GetTrybRuchu() == RUCH_STOP)
+            return true;
+        else if (winda.GetTrybRuchu() == RUCH_STOP)
+            return false;
+
+        return JestBlizejNiz(pietro, winda);
+    }
+    else    // if not check if i'm moving in proper direction
+        return poruszamSieWStrone;
 }
 
 bool Winda::WykonajRuch()

@@ -63,6 +63,8 @@ public:
     bool PoruszaSieWStrone(int pietro);
     bool JestBlizejNiz(int pietro, const Winda & winda);
 
+    bool JestLepszaNiz(int pietro, const Winda & winda);
+
     // maybe should be implemented as std::string returning function (should be better) but
     // i don't have enought informations so was used simple and logic std::cout version (based on function name)
     void wyswietlPietro(int ktore) const;
