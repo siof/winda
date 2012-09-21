@@ -42,9 +42,9 @@ struct Pietro
     bool wcisnieto;
 };
 
-// class implemetation probably should be done in better way but because of not enought informations
-// and name, will be implemented as 'single' not 'multiple' - needs additional handling outside class
-// for multiple usage case
+// implementacja klasy moglaby byc zrobiona inaczej jednak ze wzgledu na sposob zrozumienia zadania
+// oraz samej nazwy klasy wybralem prosta implementacje ktora wymaga dodatkowej obslugi z zewnatrz
+// dla przypadku uzywania kilku wind
 class Winda
 {
 public:
@@ -57,43 +57,49 @@ public:
     TrybRuchu GetTrybRuchu() const { return _trybRuchu; }
     int GetIloscPieter() const { return _iloscPieter; }
 
-    // if true - force get buttons
+    // wykonaj ruch jednoczesnie informujac czy po wykonaniu ruchu nastepuje jakis rodzaj postoju
     Postoj ruch();
-    // if true - force get buttons
+    // wezwij winde jednoczesnie informujac czy powinnismy wymusic obsluge wsiadania (jesli pietro jest to samo)
     Postoj wezwij(int skad);
     void wcisnij(int naKtore);
 
-    bool Parter() { return _aktualnePietro == 0; }
-    bool NajwyzszePietro() { return _aktualnePietro == _iloscPieter; }
+    bool Parter() { return _aktualnePietro == 0; }          // sprawdza czy jestesmy na parterze
+    bool NajwyzszePietro() { return _aktualnePietro == _iloscPieter; }  // sprawdza czy jestesmy na najwyzszym pietrze
 
-    bool ToSamoPietro(int pietro) { return _aktualnePietro == pietro; }
-    bool PoruszaSieWStrone(int pietro) const;
-    bool JestBlizejNiz(int pietro, const Winda & winda);
+    bool ToSamoPietro(int pietro) { return _aktualnePietro == pietro; } // sprawdza czy jestesmy aktualnie na danym pietrze
+    bool PoruszaSieWStrone(int pietro) const;               // sprawdza czy aktualnie poruszamy sie w strone danego pietra
+    bool JestBlizejNiz(int pietro, const Winda & winda);    // sprawdza czy jestesmy blizej danego pietra niz inna winda
 
-    bool JestLepszaNiz(int pietro, const Winda & winda);
+    bool JestLepszaNiz(int pietro, const Winda & winda);    // sprawdza czy nasza winda jest lepszym wyjsciem dla danego pietra niz inna winda
 
-    // maybe should be implemented as std::string returning function (should be better) but
-    // i don't have enought informations so was used simple and logic std::cout version (based on function name)
+    // mozliwe ze powinno to zostac zaimplementowane aby zrwacalo stringa (powinno byc lepsze) ale
+    // nie posiadam wystarczajacych informacji wiec uzyta zostala prosta i logiczna metoda pasujaca
+    // do nazwy funkcji uzywajaca std::cout zamiast zwracania stringa
     void wyswietlPietro(int ktore) const;
 
-    // this operator implemetation is determined by implementation of wyswietlPietro function
+    // implementacja tego operatora jest zalezna od implementacji funkcji wywietlPietro
     friend std::ostream & operator << (std::ostream & out, const Winda & winda);
 
 protected:
 
 private:
-    // we don't want to create not existing or duplicates
+    // nie chcemy tworzyc nie istniejacych wind lub ich duplikatow (niezbyt logiczne to)
     Winda() {}
     Winda(const Winda & winda) {}
 
+    // funkcja wykonujaca faktyczny ruch uzywana w funkcji ruch() - przeniesione do osobnej funkcji
+    // aby nie pisac tego samego kilka razy
     Postoj WykonajRuch();
+
+    // zwraca odleglosc do najblizszego wybranego pietra w danym trybie ruchu
     int GetOdlNajblWcisPietra(TrybRuchu ruch);
+    // zwraca odleglosc do najblizszego wezwanego pietra w danym trybie ruchu
     int GetOdlNajblWezwPietra(TrybRuchu ruch);
 
-    int _aktualnePietro;
-    int _iloscPieter;
-    TrybRuchu _trybRuchu;
-    Pietro * _pietra;
+    int _aktualnePietro;    // przechowuje numer aktualnego pietra
+    int _iloscPieter;       // informacja o ilosci pieter
+    TrybRuchu _trybRuchu;   // aktualny tryb ruchu
+    Pietro * _pietra;       // dane pieter dla danej windy - informacje o wcisnietych przeyciskach i wezwaniach
 };
 
 #endif // WINDA_H

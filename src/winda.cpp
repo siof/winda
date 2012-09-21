@@ -24,6 +24,7 @@
 Winda::Winda(int iloscPieter)
  : _aktualnePietro(0), _iloscPieter(iloscPieter), _trybRuchu(RUCH_STOP)
 {
+    // ilosc pieter + parter
     _pietra = new Pietro[iloscPieter+1];
 }
 
@@ -37,6 +38,7 @@ Winda::~Winda()
 
 Postoj Winda::wezwij(int skad)
 {
+    // wymus obsluge wsiadania jesli jest na tym samym pietrze (niema sensu sprawdzania dalej)
     if (skad == _aktualnePietro)
         return POSTOJ_WSADANIE;
 
@@ -47,6 +49,7 @@ Postoj Winda::wezwij(int skad)
 
 void Winda::wcisnij(int naKtore)
 {
+    // TODO: dodac obsluge dla wcisniecia przycisku aktualnego pietra
     _pietra[naKtore].wcisnieto = true;
 }
 
@@ -79,17 +82,18 @@ bool Winda::JestBlizejNiz(int pietro, const Winda & winda)
 
 bool Winda::JestLepszaNiz(int pietro, const Winda & winda)
 {
-    // is better if is already on this floor
+    // winda ktora aktualnie jest na danym pietrze bedzie lepsza od tej ktora musi dojechac
     if (ToSamoPietro(pietro))
         return true;
 
     bool poruszamSieWStrone = PoruszaSieWStrone(pietro);
     bool innaPoruszaSieWStrone = winda.PoruszaSieWStrone(pietro);
 
-    // if both are moving in same direction get closer
+    // jesli obie windy sie poruszaja w tym samym kierunku lepsza bedzie ta blizsza
     if (poruszamSieWStrone == innaPoruszaSieWStrone)
     {
-        // we prefer RUCH_STOP than moving in other direction ;)
+        // preferujemy nie poruszajaca sie winde niz ta ktora jedzie w innym kierunku ;)
+        // winda nie poruszajaca sie zwraca false przy sprawdzaniu czy porusza sie na dane pietro
         if (GetTrybRuchu() == RUCH_STOP)
             return true;
         else if (winda.GetTrybRuchu() == RUCH_STOP)
@@ -97,7 +101,7 @@ bool Winda::JestLepszaNiz(int pietro, const Winda & winda)
 
         return JestBlizejNiz(pietro, winda);
     }
-    else    // if not check if i'm moving in proper direction
+    else    // jesli nie to ta winda bedzie lepsza tylko jesli porusza sie w odpowiednim kierunku
         return poruszamSieWStrone;
 }
 
@@ -120,14 +124,18 @@ Postoj Winda::WykonajRuch()
     bool byloWezwanie = _pietra[_aktualnePietro].wezwanie;
     bool bylaWysiadka = _pietra[_aktualnePietro].wcisnieto;
 
+    // reset wartosci dla aktualnego pietra
     _pietra[_aktualnePietro].wcisnieto = false;
     _pietra[_aktualnePietro].wezwanie = false;
 
+    // preferujemy wezwanie windy nad wysiadanie z niej poniewaz przy wezwaniu winda robi to samo
+    // co przy wysiadaniu + dodatkowo nowa osoba wybiera pietro
     if (byloWezwanie)
         return POSTOJ_WSADANIE;
     else if (bylaWysiadka)
         return POSTOJ_WYSIADANIE;
 
+    // jesli nikt nie chcial wsiadac lub wysiadac to lecimy dalej
     return POSTOJ_BRAK;
 }
 
@@ -183,9 +191,11 @@ Postoj Winda::ruch()
     {
         case RUCH_DOL:
         {
+            // nie mozemy poruszac sie w dol jesli jestesmy na parterze
             if (Parter())
                 break;
 
+            // wykonaj ruch tylko jesli powinnismy jechac dalej w dol
             for (int i = _aktualnePietro-1; i >= 0; --i)
                 if (_pietra[i].wcisnieto || _pietra[i].wezwanie)
                     return WykonajRuch();
@@ -195,9 +205,11 @@ Postoj Winda::ruch()
 
         case RUCH_GORA:
         {
+            // nie mozemy poruszac sie w gore jesli jestesmy na maksymalnym pietrze
             if (NajwyzszePietro())
                 break;
 
+            // wykonaj ruch tylko jesli powinnismy jechac dalej w gore
             for (int i = _aktualnePietro+1; i <= _iloscPieter; ++i)
                 if (_pietra[i].wcisnieto || _pietra[i].wezwanie)
                     return WykonajRuch();
@@ -205,27 +217,29 @@ Postoj Winda::ruch()
             break;
         }
 
-        // for RUCH_STOP just break ;) couse we must decide where to go
+        // dla stojacej windy po prostu wykonujmy dalej funkcje ;) winda musi zadecydowac co teraz zrobic
         default:
             break;
     }
 
-    // reset
+    // reset - winda aktualnie stoi i nie wie co dalej bedzie robic
     _trybRuchu = RUCH_STOP;
 
-    // code for RUCH_STOP or when in RUCH_DOL and RUCH_GORA is need to decide where to go
+    // kod dla stojacej windy lub jesli jesli nie poruszamy sie dalej w danym kierunku i musimy zadecydowac
+    // co powinnismy teraz zrobic
 
-    // get distance to nearest inside buttons
+    // pobierz dystans do najblizszych wcisnietych przyciskow
     int najblizejGora = GetOdlNajblWcisPietra(RUCH_GORA);
     int najblizejDol = GetOdlNajblWcisPietra(RUCH_DOL);
 
-    // if not found check buttons outside
+    // jesli zadne nie sa wcisniete sprawdzmy przyciski na pietrach
     if (najblizejDol == UNLIMITED && najblizejDol == UNLIMITED)
     {
         najblizejGora = GetOdlNajblWezwPietra(RUCH_GORA);
         najblizejDol = GetOdlNajblWezwPietra(RUCH_DOL);
     }
 
+    // jesli znalezlismy nowy kierunek to ustawmy winde aby poruszala sie w tym kierunku
     if (najblizejDol != UNLIMITED || najblizejGora != UNLIMITED)
     {
         if (najblizejDol < najblizejGora)
@@ -234,22 +248,32 @@ Postoj Winda::ruch()
             _trybRuchu = RUCH_GORA;
     }
 
+    // i ostatecznie wykonajmy ruch (jesli jest to konieczne)
     return WykonajRuch();
 }
 
 void Winda::wyswietlPietro(int ktore) const
 {
-    std::cout << "\r";      // to have a chance to be same as print format requirements
+    // format wyswietlania pieter:
+    // +---+
+    // + X +
+    // +---+
+    // +  >+<
+    // +---+
+
+    std::cout << "\r";      // abysmy mieli szanse byc zgodni z formatem (przeciwdzialanie podwojnym liniom)
     std::cout << "+---+" << std::endl;
     std::cout << "+ " << (_aktualnePietro == ktore ? "X" : " ") << (_pietra[ktore].wcisnieto ? ">" : " ") << "+" << (_pietra[ktore].wezwanie ? "<" : "") << std::endl;
-    std::cout << "+---+";
+    std::cout << "+---+";   // bez znaku nowej linii - dla zgodnosci z formatem
 }
 
 std::ostream & operator << (std::ostream & out, const Winda & winda)
 {
+    // wyswietlamy pietra od najwyzszego do najnizszego
     for (int i = winda.GetIloscPieter(); i >= 0; --i)
         winda.wyswietlPietro(i);
 
+    // i dodajemy znak nowej linii dla pewnosci ;p
     out << std::endl;
 
     return out;
