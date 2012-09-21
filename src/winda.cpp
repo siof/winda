@@ -47,9 +47,12 @@ Postoj Winda::wezwij(int skad)
     return POSTOJ_BRAK;
 }
 
-void Winda::wcisnij(int naKtore)
+Postoj Winda::wcisnij(int naKtore)
 {
-    // TODO: dodac obsluge dla wcisniecia przycisku aktualnego pietra
+    // wymus obsluge wysiadania jesli jest na tym samym pietrze (niema sensu sprawdzani dalej)
+    if (naKtore == _aktualnePietro)
+        return POSTOJ_WYSIADANIE;
+
     _pietra[naKtore].wcisnieto = true;
 }
 

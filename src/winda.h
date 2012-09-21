@@ -61,7 +61,7 @@ public:
     Postoj ruch();
     // wezwij winde jednoczesnie informujac czy powinnismy wymusic obsluge wsiadania (jesli pietro jest to samo)
     Postoj wezwij(int skad);
-    void wcisnij(int naKtore);
+    Postoj wcisnij(int naKtore);
 
     bool Parter() { return _aktualnePietro == 0; }          // sprawdza czy jestesmy na parterze
     bool NajwyzszePietro() { return _aktualnePietro == _iloscPieter; }  // sprawdza czy jestesmy na najwyzszym pietrze
