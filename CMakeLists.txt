@@ -24,4 +24,6 @@ To change install directory set CMAKE_INSTALL_PREFIX to chosen path (for example
 
 message("Install directory: ${CMAKE_INSTALL_PREFIX}\n\n")
 
+find_package(Boost 1.34.0 REQUIRED)
+
 add_subdirectory("src")
