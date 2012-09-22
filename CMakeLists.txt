@@ -19,10 +19,10 @@ cmake_minimum_required(VERSION 2.8)
 
 project("Winda")
 
-message("\nThis script build Winda - project related to NSN recruitment process\n
-To change install directory set CMAKE_INSTALL_PREFIX to chosen path (for example: -DCMAKE_INSTALL_PREFIX=/home/user/test)\n\n")
+message("\nSkrypt budujacy projekt Winda\n
+Aby zmienic katalog instalacji ustaw odpowiednia sciezke do zmiennej CMAKE_INSTALL_PREFIX to chosen path (np: -DCMAKE_INSTALL_PREFIX=/home/user/test)\n\n")
 
-message("Install directory: ${CMAKE_INSTALL_PREFIX}\n\n")
+message("Katalog instalacyjny: ${CMAKE_INSTALL_PREFIX}\n\n")
 
 find_package(Boost 1.34.0 REQUIRED)
 
