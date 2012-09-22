@@ -32,7 +32,7 @@ enum TrybRuchu
 enum Postoj
 {
     POSTOJ_BRAK         = 0,    // niema postoju
-    POSTOJ_WSADANIE     = 1,    // postoj na wsiadanie (dla dojachania winda do miejsca wezwania windy)
+    POSTOJ_WSIADANIE    = 1,    // postoj na wsiadanie (dla dojachania winda do miejsca wezwania windy)
     POSTOJ_WYSIADANIE   = 2     // postoj na wysiadanie (jesli dojechalismy do miejsca wcisnietego przycisku)
 };
 
@@ -59,6 +59,8 @@ public:
 
     TrybRuchu PobierzTrybRuchu() const { return _trybRuchu; }
     int PobierzIloscPieter() const { return _iloscPieter; }
+
+    void PobierzPrzyciski();
 
     // wykonaj ruch jednoczesnie informujac czy po wykonaniu ruchu nastepuje jakis rodzaj postoju
     Postoj ruch();

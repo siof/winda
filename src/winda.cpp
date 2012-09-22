@@ -18,6 +18,7 @@
 #include "winda.h"
 
 #include <cstdlib>
+#include <sstream>
 
 #define UNLIMITED   999999
 
@@ -40,7 +41,7 @@ Postoj Winda::wezwij(int skad)
 {
     // wymus obsluge wsiadania jesli jest na tym samym pietrze (niema sensu sprawdzania dalej)
     if (skad == _aktualnePietro)
-        return POSTOJ_WSADANIE;
+        return POSTOJ_WSIADANIE;
 
     _pietra[skad].wezwanie = true;
 
@@ -136,7 +137,7 @@ Postoj Winda::WykonajRuch()
     // preferujemy wezwanie windy nad wysiadanie z niej poniewaz przy wezwaniu winda robi to samo
     // co przy wysiadaniu + dodatkowo nowa osoba wybiera pietro
     if (byloWezwanie)
-        return POSTOJ_WSADANIE;
+        return POSTOJ_WSIADANIE;
     else if (bylaWysiadka)
         return POSTOJ_WYSIADANIE;
 
@@ -287,4 +288,26 @@ std::ostream & operator << (std::ostream & out, const Winda & winda)
     out << std::endl;
 
     return out;
+}
+
+void Winda::PobierzPrzyciski()
+{
+    while (true)
+    {
+        std::string tmpStr;
+        std::cout << "Ktory przycisk wciskasz (x - zakoncz)? ";
+        std::cin >> tmpStr;
+
+        if (tmpStr == "x" || tmpStr == "X")
+            return;
+
+        int tmpPietro = 0;
+        std::istringstream iss(tmpStr);
+        iss >> tmpPietro;
+
+        if (tmpPietro < 0 || tmpPietro > _iloscPieter || tmpPietro == _aktualnePietro)
+            std::cout << "Podales bledne (lub aktualne) pietro !" << std::endl;
+        else
+            wcisnij(tmpPietro);
+    }
 }
