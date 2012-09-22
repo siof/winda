@@ -107,6 +107,8 @@ int main()
         std::cout << "\nPrekonfiguracja zakonczona" << std::endl << std::endl;
     }
 
+
+
     for (int i = 0; i < iloscWind; ++i)
     {
         delete windy[i];
