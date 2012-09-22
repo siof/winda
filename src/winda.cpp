@@ -261,10 +261,15 @@ void Winda::wyswietlPietro(int ktore) const
 {
     // format wyswietlania pieter:
     // +---+
+    // +   +<
+    // +---+
+    // +  >+
+    // +---+
     // + X +
     // +---+
-    // +  >+<
-    // +---+
+    //
+    // Na powyzszym rysunku winda jest na parterze dwupietrowego budynku, wcisniete sa przyciski:
+    // na korytarzu na 2-gim pietrze i w windzie przycisk z 1-ka.
 
     std::cout << "\r";      // abysmy mieli szanse byc zgodni z formatem (przeciwdzialanie podwojnym liniom)
     std::cout << "+---+" << std::endl;
