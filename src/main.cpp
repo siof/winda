@@ -23,6 +23,29 @@
 
 #include "winda.h"
 
+// implementacja funkcji getch z http://4programmers.net/C/Faq/W%C5%82asna_implementacja_funkcji_getch%28%29
+#include <unistd.h>
+#ifdef WIN32
+#include <conio.h>
+#else
+#include <termios.h>
+
+int getch (void)
+{
+    int key;
+    struct termios oldSettings, newSettings;        /* stuktury z ustawieniami terminala */
+
+    tcgetattr(STDIN_FILENO, &oldSettings);          /* pobranie ustawień terminala */
+    newSettings = oldSettings;
+    newSettings.c_lflag &= ~(ICANON | ECHO);        /* ustawienie odpowiednich flag */
+    tcsetattr(STDIN_FILENO, TCSANOW, &newSettings); /* zastosowanie ustawień */
+    key = getchar();                                /* pobranie znaku ze standardowego wejścia */
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldSettings); /* przywrócenie poprzednich ustawień terminala */
+    return key;
+}
+#endif
+// koniec zapozyczonej implementacji
+
 // funkcja do pobrania danej typu int od uzytkownika
 void PobierzDane(const char * str, int & out, int minWartosc, int maxWartosc)
 {
@@ -133,6 +156,7 @@ int main()
 
     while (true)
     {
+        bool zakoncz = false;
         WyswietlWindy(windy, iloscWind);
 
         while (PobierzTakNie("Chcesz wykonac jakies dzialanie (tak - wybierz opcje, nie - jedz dalej)? "))
@@ -141,9 +165,9 @@ int main()
             std::cout << "\t 1 - wcisnij przyciski w windzie" << std::endl;
             std::cout << "\t 2 - wezwij windy na konkretne pietra" << std::endl;
             std::cout << "\t x - kontynuuj" << std::endl;
+            std::cout << "\t e - zakoncz demo" << std::endl;
 
-            bool wyjdz = false, wyjdz2 = false;
-            while (char c = getchar())
+            while (char c = getch())
             {
                 if (c == '1')
                 {
@@ -191,23 +215,21 @@ int main()
                     }
                     break;
                 }
-                else if (c == 'x')
+                else if (c == 'x' || c == 'X')
                 {
-                    wyjdz = true;
                     break;
                 }
-                else
+                else if (c == 'e' || c == 'E')
                 {
-                    // usun ostatni wpisany znak jesli nie byl on jedna z dostepnych opcji
-                    std::cout << '\b';
-                    std::cout << " ";
-                    std::cout << '\b';
+                    zakoncz = true;
+                    break;
                 }
             }
 
-            if (wyjdz)
-                break;
         }
+
+        if (zakoncz)
+            break;
 
         for (int i = 0; i < iloscWind; ++i)
         {
