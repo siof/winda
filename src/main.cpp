@@ -17,6 +17,7 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <sstream>
 
@@ -43,7 +44,6 @@ int getch (void)
     return key;
 }
 #endif
-// koniec zapozyczonej implementacji
 
 // funkcja do pobrania danej typu int od uzytkownika
 void PobierzDane(const char * str, int & out, int minWartosc, int maxWartosc)
@@ -76,12 +76,12 @@ bool iequals(const char * str1, const char * str2)
 }
 
 // funkcja pobierajaca zgode od uzytkownika na cos i zwracajaca informacje czy sie zgodzil czy nie
-bool PobierzTakNie(const char * str, ...)
+bool PobierzTakNie(const char * format, ...)
 {
     // wyswietl wiadomosc z formatu
     va_list args;
-    va_start(args, str);
-    vprintf(str, args);
+    va_start(args, format);
+    vprintf(format, args);
     va_end(args);
 
     // pobierz odpowiedz
@@ -106,8 +106,15 @@ void WyswietlWindy(Winda ** windy, int ilosc)
     }
 }
 
+int irand(int odW, int doW)
+{
+    return (rand()%(doW-odW)) + odW;
+}
+
 int main()
 {
+    srand(time(NULL));
+
     std::cout << "***********************************************" << std::endl;
     std::cout << "* Program demonstrujacy dzialanie klasy Winda *" << std::endl;
     std::cout << "*                                             *" << std::endl;
@@ -141,25 +148,49 @@ int main()
         std::cout << "Prekonfiguracja wind ... " << std::endl;
         std::cout << "UWAGA ! Prekonfiguracja nie bierze pod uwage wezwan/wcisniec przyciskow aktualnego pietra !" << std::endl << std::endl;;
 
-        // pobierz informacje w celu ustawienia kazdego pietra dla kazdej windy
-        // (informajce o pietrach NIE sa wspoldzielone - i raczej nie powinny byc !)
-        for (int i = 0; i < iloscWind; ++i)
+        if (PobierzTakNie("Chcesz prekonfigurowac recznie (nie - losowo)? "))
         {
-            std::cout << "Prekonfiguracja windy numer " << i+1 << std::endl;
-
-            int numerPietra = 0;
-            PobierzDane("Podaj numer pietra na ktorym powinna sie znajdowac winda: ", numerPietra, 0, iloscPieter);
-            windy[i]->UstawAktualnePietro(numerPietra);
-
-            for (int j = 0; j < iloscPieter+1; ++j)
+            // pobierz informacje w celu ustawienia kazdego pietra dla kazdej windy
+            // (informajce o pietrach NIE sa wspoldzielone - i raczej nie powinny byc !)
+            for (int i = 0; i < iloscWind; ++i)
             {
-                if (PobierzTakNie("Wciskac przycisk na pietro %i ? ", j))
-                    windy[i]->wcisnij(j);
+                std::cout << "Prekonfiguracja windy numer " << i+1 << std::endl;
 
-                if (PobierzTakNie("Wezwac winde na pietro %i ? ", j))
-                    windy[i]->wezwij(j);
+                int numerPietra = 0;
+                PobierzDane("Podaj numer pietra na ktorym powinna sie znajdowac winda: ", numerPietra, 0, iloscPieter);
+                windy[i]->UstawAktualnePietro(numerPietra);
+
+                for (int j = 0; j < iloscPieter+1; ++j)
+                {
+                    if (PobierzTakNie("Wciskac przycisk na pietro %i ? ", j))
+                        windy[i]->wcisnij(j);
+
+                    if (PobierzTakNie("Wezwac winde na pietro %i ? ", j))
+                        windy[i]->wezwij(j);
+                }
+                std::cout << std::endl;
             }
-            std::cout << std::endl;
+        }
+        else    // prekonfiguracja automatyczna do losowych wartosci
+        {
+            for (int i = 0; i < iloscWind; ++i)
+            {
+                // 50% szansy na prekonfiguracje danej windy
+                if (irand(0, 100) > 50)
+                {
+                    windy[i]->UstawAktualnePietro(irand(0, iloscPieter));
+                    for (int j = 0; j <= iloscPieter; ++j)
+                    {
+                        // 25% szansy na wcisniecie przycisku na to pietro
+                        if (irand(0, 100) > 75)
+                            windy[i]->wcisnij(j);
+
+                        // 25% szansy na wezwanie windy na to pietro
+                        if (irand(0, 100) > 75)
+                            windy[i]->wezwij(j);
+                    }
+                }
+            }
         }
 
         std::cout << "\nPrekonfiguracja zakonczona" << std::endl << std::endl;
@@ -173,9 +204,11 @@ int main()
 
         while (PobierzTakNie("Chcesz wykonac jakies dzialanie (tak - wybierz opcje, nie - jedz dalej)? "))
         {
+            bool wyjdz = false;
             std::cout << "Dostepne dzialania:" << std::endl;
             std::cout << "\t 1 - wcisnij przyciski w windzie" << std::endl;
             std::cout << "\t 2 - wezwij windy na konkretne pietra" << std::endl;
+            std::cout << "\t w - wymus wyswietlenie wind" << std::endl;
             std::cout << "\t x - kontynuuj" << std::endl;
             std::cout << "\t e - zakoncz demo" << std::endl;
 
@@ -213,22 +246,25 @@ int main()
                             std::cout << "Podales bledne pietro !" << std::endl;
                         else
                         {
-                            Winda * tmpWinda = windy[0];
+                            int najlepszaWinda = 0;
 
                             // znajdz najlepsza winde
                             for (int i = 1; i < iloscWind; ++i)
-                                if (windy[i]->JestLepszaNiz(tmpPietro, *tmpWinda))
-                                    tmpWinda = windy[i];
+                                if (windy[i]->JestLepszaNiz(tmpPietro, *windy[najlepszaWinda]))
+                                    najlepszaWinda = i;
 
-                            if (tmpWinda->wezwij(tmpPietro) == POSTOJ_WSIADANIE)
+                            std::cout << "Wezwano winde " << najlepszaWinda << std::endl;
+
+                            if (windy[najlepszaWinda]->wezwij(tmpPietro) == POSTOJ_WSIADANIE)
                                 if (PobierzTakNie("Wcisnieto wezwanie windy z aktualnego pietra, ktos wsiadl. Chcesz wcisnac przyciski ? "))
-                                    tmpWinda->PobierzPrzyciski();
+                                    windy[najlepszaWinda]->PobierzPrzyciski();
                         }
                     }
                     break;
                 }
                 else if (c == 'x' || c == 'X')
                 {
+                    wyjdz = true;
                     break;
                 }
                 else if (c == 'e' || c == 'E')
@@ -236,8 +272,12 @@ int main()
                     zakoncz = true;
                     break;
                 }
+                else if (c == 'w' || c == 'W')
+                    WyswietlWindy(windy, iloscWind);
             }
 
+            if (zakoncz || wyjdz)
+                break;
         }
 
         if (zakoncz)
@@ -249,14 +289,14 @@ int main()
             {
                 case POSTOJ_WSIADANIE:
                 {
-                    if (PobierzTakNie("Ktos wsiadl, chcesz wcisnac przyciski ? "))
+                    if (PobierzTakNie("Ktos wsiadl do windy %i, chcesz wcisnac przyciski ? ", i+1))
                         windy[i]->PobierzPrzyciski();
                     break;
                 }
                 case POSTOJ_WYSIADANIE:
                 {
                     if (infoOWysiadaniu)
-                        std::cout << "INFO: Ktos wysiadl" << std::endl;
+                        std::cout << "INFO: Ktos wysiadl z windy " << i+1 << std::endl;
                     break;
                 }
                 default:

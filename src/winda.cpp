@@ -88,6 +88,10 @@ bool Winda::JestBlizejNiz(int pietro, const Winda & winda)
 
 bool Winda::JestLepszaNiz(int pietro, const Winda & winda)
 {
+    // jesli to ta sama winda to niema sensu dalej sprawdzac
+    if (this == &winda)
+        return false;
+
     // winda ktora aktualnie jest na danym pietrze bedzie lepsza od tej ktora musi dojechac
     if (ToSamoPietro(pietro))
         return true;

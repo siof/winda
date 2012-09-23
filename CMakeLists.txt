@@ -20,8 +20,20 @@ cmake_minimum_required(VERSION 2.8)
 project("Winda")
 
 message("\nSkrypt budujacy projekt Winda\n
-Aby zmienic katalog instalacji ustaw odpowiednia sciezke do zmiennej CMAKE_INSTALL_PREFIX to chosen path (np: -DCMAKE_INSTALL_PREFIX=/home/user/test)\n\n")
+Aby zmienic katalog instalacji ustaw odpowiednia sciezke do zmiennej CMAKE_INSTALL_PREFIX to chosen path (np: -DCMAKE_INSTALL_PREFIX=/home/user/test)\n
+Aby zbudowac statycznie ustaw zmienna STATIC (np: -DSTATIC=1)\n")
 
-message("Katalog instalacyjny: ${CMAKE_INSTALL_PREFIX}\n\n")
+message("Katalog instalacyjny: ${CMAKE_INSTALL_PREFIX}")
+
+if (STATIC)
+    message("* Wlaczono budowanie statyczne")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+endif(STATIC)
+
+message("")
+
+if (WIN32)
+    add_definitions(-DWIN32)
+endif(WIN32)
 
 add_subdirectory("src")
