@@ -19,15 +19,18 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <sstream>
 
 #include "winda.h"
 
 // implementacja funkcji getch z http://4programmers.net/C/Faq/W%C5%82asna_implementacja_funkcji_getch%28%29
-#include <unistd.h>
 #ifdef WIN32
 #include <conio.h>
+// use safe getch on WIN
+#define getch _getch
 #else
+#include <unistd.h>
 #include <termios.h>
 
 int getch (void)
