@@ -18,118 +18,33 @@
 #ifndef FUNKCJE_H_INCLUDED
 #define FUNKCJE_H_INCLUDED
 
-#include <cstdarg>
-#include <cstdio>
-#include <sstream>
 #include <vector>
-
-#include <boost/algorithm/string.hpp>
 
 #include "winda.h"
 
-struct WybieraczNajlepszejWindy
+namespace WindyF
 {
-    WybieraczNajlepszejWindy(int pietro, Winda *&najlepsza)
-        : _pietro(pietro), _najlepsza(najlepsza) { }
-
-    void Odwiedz(std::vector<Winda> & windy)
+    struct WybieraczNajlepszej
     {
-        _najlepsza = &windy.front();
+        WybieraczNajlepszej(int pietro, Winda *&najlepsza)
+            : _pietro(pietro), _najlepsza(najlepsza) { }
 
-        // to samo pietro ? niema sensu szukac innej windy
-        if (_najlepsza->JestNaPietrze(_pietro))
-            return;
+        void Odwiedz(std::vector<Winda> & windy);
 
-        for (std::vector<Winda>::iterator itr = windy.begin(); itr != windy.end(); ++itr)
-        {
-            Winda & aktualna = (*itr);
-
-            if (&aktualna == _najlepsza)
-                continue;
-
-            // to samo pietro ? niema sensu szukac innej windy
-            if (aktualna.JestNaPietrze(_pietro))
-            {
-                _najlepsza = &aktualna;
-                return;
-            }
-
-            bool najlPoruszaSieWStrone = _najlepsza->PoruszaSieWStrone(_pietro);
-            bool nowaPoruszaSieWStrone = aktualna.PoruszaSieWStrone(_pietro);
-
-            if (najlPoruszaSieWStrone == nowaPoruszaSieWStrone)
-            {
-                if (_najlepsza->PobierzTrybRuchu() == RUCH_STOP)
-                    continue;
-
-                if (aktualna.PobierzTrybRuchu() != RUCH_STOP &&
-                    _najlepsza->PobierzDystansDoPietra(_pietro) <= aktualna.PobierzDystansDoPietra(_pietro))
-                    continue;
-            }
-            else if (najlPoruszaSieWStrone)
-                continue;
-
-            _najlepsza = &aktualna;
-        }
-    }
-
-    int _pietro;
-    Winda *&_najlepsza;
-};
+        int _pietro;
+        Winda *&_najlepsza;
+    };
 
 
-// funkcja do pobrania danej typu int od uzytkownika
-void PobierzDane(const char * str, int & out, int minWartosc, int maxWartosc)
-{
-    // wyswietl wiadomosc i pobierz pierwsza dana
-    std::cout << str;
-    std::cin >> out;
+    // funkcja do pobrania danej typu int od uzytkownika
+    void PobierzDane(const char * str, int & out, int minWartosc, int maxWartosc);
 
-    // dopoki nie pobierzemy TEORETYCZNIE poprawnej wartosci
-    while (out < minWartosc || out > maxWartosc)
-    {
-        std::cout << "Podano bledna wartosc prosze podac ponownie (min " << minWartosc << ", max " << maxWartosc << "): ";
-        std::cin >> out;
-    }
+    // funkcja pobierajaca zgode od uzytkownika na cos i zwracajaca informacje czy sie zgodzil czy nie
+    bool PobierzTakNie(const char * format, ...);
+
+    int irand(int odW, int doW);
 }
 
-// funkcja pobierajaca zgode od uzytkownika na cos i zwracajaca informacje czy sie zgodzil czy nie
-bool PobierzTakNie(const char * format, ...)
-{
-    // wyswietl wiadomosc z formatu
-    va_list args;
-    va_start(args, format);
-    vprintf(format, args);
-    va_end(args);
-
-    // pobierz odpowiedz
-    std::string tmpStr;
-    std::cin >> tmpStr;
-
-    // sprawdz odpowiedz (tak/yes/t/y - zgadzamy sie, wszystko inne - brak zgody)
-    if (boost::iequals(tmpStr, "tak") || boost::iequals(tmpStr, "yes"))
-        return true;
-    else if (boost::iequals(tmpStr, "t") || boost::iequals(tmpStr, "y"))
-        return true;
-
-    return false;
-}
-
-void WyswietlWindy(const std::vector<Winda> & windy)
-{
-    for (int i = 0; i < windy.size(); ++i)
-    {
-        std::cout << "Winda " << i+1 << std::endl;
-        std::cout << windy[i] << std::endl;
-    }
-}
-
-int irand(int odW, int doW)
-{
-    return (rand()%(doW-odW)) + odW;
-}
-
-// implementacja funkcji getch z http://4programmers.net/C/Faq/W%C5%82asna_implementacja_funkcji_getch%28%29
 #ifdef WIN32
 #include <conio.h>
 // use safe getch on WIN
@@ -138,19 +53,7 @@ int irand(int odW, int doW)
 #include <unistd.h>
 #include <termios.h>
 
-int getch (void)
-{
-    int key;
-    struct termios oldSettings, newSettings;        /* stuktury z ustawieniami terminala */
-
-    tcgetattr(STDIN_FILENO, &oldSettings);          /* pobranie ustawień terminala */
-    newSettings = oldSettings;
-    newSettings.c_lflag &= ~(ICANON | ECHO);        /* ustawienie odpowiednich flag */
-    tcsetattr(STDIN_FILENO, TCSANOW, &newSettings); /* zastosowanie ustawień */
-    key = getchar();                                /* pobranie znaku ze standardowego wejścia */
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldSettings); /* przywrócenie poprzednich ustawień terminala */
-    return key;
-}
+int getch (void);
 #endif
 
 #endif // FUNKCJE_H_INCLUDED

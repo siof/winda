@@ -21,6 +21,8 @@
 #include <iostream>
 #include <vector>
 
+#define UNLIMITED   999999
+
 // tryb ruchu windy
 enum TrybRuchu
 {

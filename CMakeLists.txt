@@ -34,8 +34,10 @@ message("")
 
 if (WIN32)
     add_definitions("-DWIN32")
+else (WIN32)
+    if (DEBUG)
+        add_definitions("-ggdb")
+    endif(DEBUG)
 endif(WIN32)
-
-find_package(Boost 1.34.0 REQUIRED)
 
 add_subdirectory("src")

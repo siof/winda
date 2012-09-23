@@ -20,8 +20,6 @@
 #include <cstdlib>
 #include <sstream>
 
-#define UNLIMITED   999999
-
 Winda::Winda(int iloscPieter)
  : _aktualnePietro(0), _trybRuchu(RUCH_STOP)
 {
@@ -237,7 +235,7 @@ Postoj Winda::ruch()
     int najblizejDol = PobierzOdlNajblWcisPietra(RUCH_DOL);
 
     // jesli zadne nie sa wcisniete sprawdzmy przyciski na pietrach
-    if (najblizejDol == UNLIMITED && najblizejDol == UNLIMITED)
+    if (najblizejDol == UNLIMITED && najblizejGora == UNLIMITED)
     {
         najblizejGora = PobierzOdlNajblWezwPietra(RUCH_GORA);
         najblizejDol = PobierzOdlNajblWezwPietra(RUCH_DOL);
