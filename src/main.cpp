@@ -17,9 +17,8 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <cstring>
 #include <sstream>
-
-#include <boost/algorithm/string.hpp>
 
 #include "winda.h"
 
@@ -62,6 +61,20 @@ void PobierzDane(const char * str, int & out, int minWartosc, int maxWartosc)
     }
 }
 
+bool iequals(const char * str1, const char * str2)
+{
+    int count = strlen(str1);
+
+    if (count != strlen(str2))
+        return false;
+
+    for (int i = 0; i < count; ++i)
+        if (tolower(str1[i]) != tolower(str2[i]))
+            return false;
+
+    return true;
+}
+
 // funkcja pobierajaca zgode od uzytkownika na cos i zwracajaca informacje czy sie zgodzil czy nie
 bool PobierzTakNie(const char * str, ...)
 {
@@ -76,10 +89,9 @@ bool PobierzTakNie(const char * str, ...)
     std::cin >> tmpStr;
 
     // sprawdz odpowiedz (tak/yes/t/y - zgadzamy sie, wszystko inne - brak zgody)
-    // uzycie boosta ze wzgledu na prostote ;p
-    if (boost::iequals(tmpStr, "tak") || boost::iequals(tmpStr, "yes"))
+    if (iequals(tmpStr.c_str(), "tak") || iequals(tmpStr.c_str(), "yes"))
         return true;
-    else if (tmpStr == "t" || tmpStr == "T" || tmpStr == "y" || tmpStr == "Y")
+    else if (iequals(tmpStr.c_str(), "t") || iequals(tmpStr.c_str(), "y"))
         return true;
 
     return false;

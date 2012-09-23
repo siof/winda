@@ -24,6 +24,4 @@ Aby zmienic katalog instalacji ustaw odpowiednia sciezke do zmiennej CMAKE_INSTA
 
 message("Katalog instalacyjny: ${CMAKE_INSTALL_PREFIX}\n\n")
 
-find_package(Boost 1.34.0 REQUIRED)
-
 add_subdirectory("src")
