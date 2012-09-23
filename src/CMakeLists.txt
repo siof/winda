@@ -1,5 +1,7 @@
 file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.h)
 
+include_directories(${Boost_INCLUDE_DIRS})
+
 add_executable(winda ${SOURCES})
 
 install(TARGETS winda

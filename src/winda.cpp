@@ -23,40 +23,22 @@
 #define UNLIMITED   999999
 
 Winda::Winda(int iloscPieter)
- : _aktualnePietro(0), _iloscPieter(iloscPieter), _trybRuchu(RUCH_STOP)
+ : _aktualnePietro(0), _trybRuchu(RUCH_STOP)
 {
     // ilosc pieter + parter
-    _pietra = new Pietro[iloscPieter+1];
+    _pietra.resize(iloscPieter+1, Pietro());
+}
+
+Winda::Winda(const Winda & winda)
+{
+    _aktualnePietro = winda.PobierzAktualnePietro();
+    _pietra = winda.PobierzDanePieter();
+    _trybRuchu = winda.PobierzTrybRuchu();
 }
 
 Winda::~Winda()
 {
-    if (_pietra)
-        delete [] _pietra;
 
-    _pietra = NULL;
-}
-
-Postoj Winda::wezwij(int skad)
-{
-    // wymus obsluge wsiadania jesli jest na tym samym pietrze (niema sensu sprawdzania dalej)
-    if (skad == _aktualnePietro)
-        return POSTOJ_WSIADANIE;
-
-    _pietra[skad].wezwanie = true;
-
-    return POSTOJ_BRAK;
-}
-
-Postoj Winda::wcisnij(int naKtore)
-{
-    // wymus obsluge wysiadania jesli jest na tym samym pietrze (niema sensu sprawdzani dalej)
-    if (naKtore == _aktualnePietro)
-        return POSTOJ_WYSIADANIE;
-
-    _pietra[naKtore].wcisnieto = true;
-
-    return POSTOJ_BRAK;
 }
 
 bool Winda::PoruszaSieWStrone(int pietro) const
@@ -78,41 +60,31 @@ bool Winda::PoruszaSieWStrone(int pietro) const
     return false;
 }
 
-bool Winda::JestBlizejNiz(int pietro, const Winda & winda)
+int Winda::PobierzDystansDoPietra(int pietro)
 {
-    if (std::abs(_aktualnePietro - pietro) < std::abs(winda.PobierzAktualnePietro() - pietro))
-        return true;
-    else
-        return false;
+    return std::abs(_aktualnePietro - pietro);
 }
 
-bool Winda::JestLepszaNiz(int pietro, const Winda & winda)
+void Winda::PobierzPrzyciski()
 {
-    // jesli to ta sama winda to niema sensu dalej sprawdzac
-    if (this == &winda)
-        return false;
-
-    // winda ktora aktualnie jest na danym pietrze bedzie lepsza od tej ktora musi dojechac
-    if (ToSamoPietro(pietro))
-        return true;
-
-    bool poruszamSieWStrone = PoruszaSieWStrone(pietro);
-    bool innaPoruszaSieWStrone = winda.PoruszaSieWStrone(pietro);
-
-    // jesli obie windy sie poruszaja w tym samym kierunku lepsza bedzie ta blizsza
-    if (poruszamSieWStrone == innaPoruszaSieWStrone)
+    while (true)
     {
-        // preferujemy nie poruszajaca sie winde niz ta ktora jedzie w innym kierunku ;)
-        // winda nie poruszajaca sie zwraca false przy sprawdzaniu czy porusza sie na dane pietro
-        if (PobierzTrybRuchu() == RUCH_STOP)
-            return true;
-        else if (winda.PobierzTrybRuchu() == RUCH_STOP)
-            return false;
+        std::string tmpStr;
+        std::cout << "Ktory przycisk wciskasz (x - zakoncz)? ";
+        std::cin >> tmpStr;
 
-        return JestBlizejNiz(pietro, winda);
+        if (tmpStr == "x" || tmpStr == "X")
+            return;
+
+        int tmpPietro = 0;
+        std::istringstream iss(tmpStr);
+        iss >> tmpPietro;
+
+        if (tmpPietro < 0 || tmpPietro > _pietra.size() || tmpPietro == _aktualnePietro)
+            std::cout << "Podales bledne (lub aktualne) pietro !" << std::endl;
+        else
+            wcisnij(tmpPietro);
     }
-    else    // jesli nie to ta winda bedzie lepsza tylko jesli porusza sie w odpowiednim kierunku
-        return poruszamSieWStrone;
 }
 
 Postoj Winda::WykonajRuch()
@@ -160,7 +132,7 @@ int Winda::PobierzOdlNajblWcisPietra(TrybRuchu ruch)
             break;
 
         case RUCH_GORA:
-            for (int i = _aktualnePietro; i <= _iloscPieter; ++i)
+            for (int i = _aktualnePietro; i < _pietra.size(); ++i)
                 if (_pietra[i].wcisnieto)
                     return i - _aktualnePietro;
             break;
@@ -183,7 +155,7 @@ int Winda::PobierzOdlNajblWezwPietra(TrybRuchu ruch)
             break;
 
         case RUCH_GORA:
-            for (int i = _aktualnePietro; i <= _iloscPieter; ++i)
+            for (int i = _aktualnePietro; i < _pietra.size(); ++i)
                 if (_pietra[i].wezwanie)
                     return i - _aktualnePietro;
             break;
@@ -195,6 +167,28 @@ int Winda::PobierzOdlNajblWezwPietra(TrybRuchu ruch)
     return UNLIMITED;
 }
 
+Postoj Winda::wezwij(int skad)
+{
+    // wymus obsluge wsiadania jesli jest na tym samym pietrze (niema sensu sprawdzania dalej)
+    if (skad == _aktualnePietro)
+        return POSTOJ_WSIADANIE;
+
+    _pietra[skad].wezwanie = true;
+
+    return POSTOJ_BRAK;
+}
+
+Postoj Winda::wcisnij(int naKtore)
+{
+    // wymus obsluge wysiadania jesli jest na tym samym pietrze (niema sensu sprawdzani dalej)
+    if (naKtore == _aktualnePietro)
+        return POSTOJ_WYSIADANIE;
+
+    _pietra[naKtore].wcisnieto = true;
+
+    return POSTOJ_BRAK;
+}
+
 Postoj Winda::ruch()
 {
     switch (_trybRuchu)
@@ -202,7 +196,7 @@ Postoj Winda::ruch()
         case RUCH_DOL:
         {
             // nie mozemy poruszac sie w dol jesli jestesmy na parterze
-            if (Parter())
+            if (JestNaParterze())
                 break;
 
             // wykonaj ruch tylko jesli powinnismy jechac dalej w dol
@@ -216,11 +210,11 @@ Postoj Winda::ruch()
         case RUCH_GORA:
         {
             // nie mozemy poruszac sie w gore jesli jestesmy na maksymalnym pietrze
-            if (NajwyzszePietro())
+            if (JestNaNajwyzszymPietrze())
                 break;
 
             // wykonaj ruch tylko jesli powinnismy jechac dalej w gore
-            for (int i = _aktualnePietro+1; i <= _iloscPieter; ++i)
+            for (int i = _aktualnePietro+1; i < _pietra.size(); ++i)
                 if (_pietra[i].wcisnieto || _pietra[i].wezwanie)
                     return WykonajRuch();
 
@@ -292,26 +286,4 @@ std::ostream & operator << (std::ostream & out, const Winda & winda)
     out << std::endl;
 
     return out;
-}
-
-void Winda::PobierzPrzyciski()
-{
-    while (true)
-    {
-        std::string tmpStr;
-        std::cout << "Ktory przycisk wciskasz (x - zakoncz)? ";
-        std::cin >> tmpStr;
-
-        if (tmpStr == "x" || tmpStr == "X")
-            return;
-
-        int tmpPietro = 0;
-        std::istringstream iss(tmpStr);
-        iss >> tmpPietro;
-
-        if (tmpPietro < 0 || tmpPietro > _iloscPieter || tmpPietro == _aktualnePietro)
-            std::cout << "Podales bledne (lub aktualne) pietro !" << std::endl;
-        else
-            wcisnij(tmpPietro);
-    }
 }

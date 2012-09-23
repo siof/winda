@@ -33,7 +33,9 @@ endif(STATIC)
 message("")
 
 if (WIN32)
-    add_definitions(-DWIN32)
+    add_definitions("-DWIN32")
 endif(WIN32)
+
+find_package(Boost 1.34.0 REQUIRED)
 
 add_subdirectory("src")

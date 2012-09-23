@@ -19,6 +19,7 @@
 #define WINDA_H
 
 #include <iostream>
+#include <vector>
 
 // tryb ruchu windy
 enum TrybRuchu
@@ -40,6 +41,7 @@ enum Postoj
 struct Pietro
 {
     Pietro() : wezwanie(false), wcisnieto(false) { }
+    Pietro(const Pietro & pietro) : wezwanie(pietro.wezwanie), wcisnieto(pietro.wcisnieto) { }
 
     bool wezwanie;
     bool wcisnieto;
@@ -52,15 +54,29 @@ class Winda
 {
 public:
     Winda(int iloscPieter);
+    Winda(const Winda & winda);
     ~Winda();
 
+
     int PobierzAktualnePietro() const { return _aktualnePietro; }
+    TrybRuchu PobierzTrybRuchu() const { return _trybRuchu; }
+    int PobierzIloscPieter() const { return _pietra.size() - 1; }
+    std::vector<Pietro> PobierzDanePieter() const { return _pietra; }
+
+    // sprawdza czy jestesmy na parterze
+    bool JestNaParterze() const { return _aktualnePietro == 0; }
+    // sprawdza czy jestesmy na najwyzszym pietrze
+    bool JestNaNajwyzszymPietrze() const { return _aktualnePietro == _pietra.size()-1; }
+    // sprawdza czy jestesmy aktualnie na danym pietrze
+    bool JestNaPietrze(int pietro) const { return _aktualnePietro == pietro; }
+    // sprawdza czy aktualnie poruszamy sie w strone danego pietra
+    bool PoruszaSieWStrone(int pietro) const;
+
+    int PobierzDystansDoPietra(int pietro);
+    void PobierzPrzyciski();
+
     void UstawAktualnePietro(int val) { _aktualnePietro = val; }
 
-    TrybRuchu PobierzTrybRuchu() const { return _trybRuchu; }
-    int PobierzIloscPieter() const { return _iloscPieter; }
-
-    void PobierzPrzyciski();
 
     // wykonaj ruch jednoczesnie informujac czy po wykonaniu ruchu nastepuje jakis rodzaj postoju
     Postoj ruch();
@@ -70,15 +86,6 @@ public:
     // winda jest na danym pietrze - winda poinformuje o tym
     Postoj wezwij(int skad);
     Postoj wcisnij(int naKtore);
-
-    bool Parter() { return _aktualnePietro == 0; }          // sprawdza czy jestesmy na parterze
-    bool NajwyzszePietro() { return _aktualnePietro == _iloscPieter; }  // sprawdza czy jestesmy na najwyzszym pietrze
-
-    bool ToSamoPietro(int pietro) { return _aktualnePietro == pietro; } // sprawdza czy jestesmy aktualnie na danym pietrze
-    bool PoruszaSieWStrone(int pietro) const;               // sprawdza czy aktualnie poruszamy sie w strone danego pietra
-    bool JestBlizejNiz(int pietro, const Winda & winda);    // sprawdza czy jestesmy blizej danego pietra niz inna winda
-
-    bool JestLepszaNiz(int pietro, const Winda & winda);    // sprawdza czy nasza winda jest lepszym wyjsciem dla danego pietra niz inna winda
 
     // mozliwe ze powinno to zostac zaimplementowane aby zrwacalo stringa (powinno byc lepsze) ale
     // nie posiadam wystarczajacych informacji wiec uzyta zostala prosta i logiczna metoda pasujaca
@@ -91,9 +98,8 @@ public:
 protected:
 
 private:
-    // nie chcemy tworzyc nie istniejacych wind lub ich duplikatow (niezbyt logiczne to)
+    // nie chcemy tworzyc nie istniejacych wind
     Winda() {}
-    Winda(const Winda & winda) {}
 
     // funkcja wykonujaca faktyczny ruch uzywana w funkcji ruch() - przeniesione do osobnej funkcji
     // aby nie pisac tego samego kilka razy
@@ -104,10 +110,9 @@ private:
     // zwraca odleglosc do najblizszego wezwanego pietra w danym trybie ruchu
     int PobierzOdlNajblWezwPietra(TrybRuchu ruch);
 
-    int _aktualnePietro;    // przechowuje numer aktualnego pietra
-    int _iloscPieter;       // informacja o ilosci pieter
-    TrybRuchu _trybRuchu;   // aktualny tryb ruchu
-    Pietro * _pietra;       // dane pieter dla danej windy - informacje o wcisnietych przeyciskach i wezwaniach
+    int _aktualnePietro;            // przechowuje numer aktualnego pietra
+    TrybRuchu _trybRuchu;           // aktualny tryb ruchu
+    std::vector<Pietro> _pietra;    // dane pieter dla danej windy - informacje o wcisnietych przeyciskach i wezwaniach
 };
 
 #endif // WINDA_H
