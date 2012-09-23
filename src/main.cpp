@@ -190,7 +190,7 @@ int main()
                     if (tmpWinda < 1 || tmpWinda > iloscWind)
                         std::cout << "Niema takiej windy" << std::endl;
                     else
-                        windy[tmpWinda]->PobierzPrzyciski();
+                        windy[tmpWinda-1]->PobierzPrzyciski();
 
                     break;
                 }
