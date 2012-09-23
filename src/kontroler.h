@@ -22,6 +22,8 @@
 
 class Winda;
 
+typedef std::vector<Winda> WektorWind;
+
 class KontrolerWind
 {
 public:
@@ -50,7 +52,7 @@ private:
     KontrolerWind(const KontrolerWind &) {}
     KontrolerWind & operator = (const KontrolerWind&) {}
 
-    std::vector<Winda> _windy;
+    WektorWind _windy;
     bool _infoOWysiadaniu;
 };
 

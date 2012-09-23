@@ -25,7 +25,7 @@
 
 namespace WindyF
 {
-    void WybieraczNajlepszej::Odwiedz(std::vector<Winda> & windy)
+    void WybieraczNajlepszej::Odwiedz(WektorWind & windy)
     {
         _najlepsza = &windy.front();
 
@@ -33,7 +33,7 @@ namespace WindyF
         if (_najlepsza->JestNaPietrze(_pietro))
             return;
 
-        for (std::vector<Winda>::iterator itr = windy.begin(); itr != windy.end(); ++itr)
+        for (WektorWind::iterator itr = windy.begin(); itr != windy.end(); ++itr)
         {
             Winda & aktualna = (*itr);
 

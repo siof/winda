@@ -22,6 +22,8 @@
 
 #include "winda.h"
 
+typedef std::vector<Winda> WektorWind;
+
 namespace WindyF
 {
     struct WybieraczNajlepszej
@@ -29,7 +31,7 @@ namespace WindyF
         WybieraczNajlepszej(int pietro, Winda *&najlepsza)
             : _pietro(pietro), _najlepsza(najlepsza) { }
 
-        void Odwiedz(std::vector<Winda> & windy);
+        void Odwiedz(WektorWind & windy);
 
         int _pietro;
         Winda *&_najlepsza;
