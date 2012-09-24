@@ -23,6 +23,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include <string>
+
 namespace WindyF
 {
     void WybieraczNajlepszej::Odwiedz(WektorWind & windy)
