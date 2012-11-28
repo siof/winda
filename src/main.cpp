@@ -90,3 +90,38 @@ int main()
 
     return 0;
 }
+
+/*
+Napisac klase Winda. Ma ona posiadac minimum nastepujace metody publiczne:
+• Winda(int ilePieter – konstruktor,
+• ruch() – funkcja przesuwajaca winde o jedno pietro w góre lub w dół (lub wcale) w zaleznosc od aktualnego kierunku,
+• wezwij(int Skad) – funkcja wzywajaca winde na któres pietro (nacisniecie przycisku na korytarzu),
+• wcisnij(int naKtore) – funkcja wysyłajaca winde na któres pietro (nacisniecie przycisku w windzie),
+• wyswietlPietro(int ktore) – funkcja wyswietlajaca jedno pietro w/g podanego dalej wzorca,
+• operator<< (cout) – operator wyswietlajacy cała winde na ekranie (za pomoca wywołan metody wyswietlPietro).
+
+Format wyswietlania jest nastepujacy:
+
++---+
++   +<
++---+
++  >+
++---+
++ X +
++---+
+
+Na powyzszym rysunku winda jest na parterze dwupietrowego budynku, wcisniete sa przyciski:
+na korytarzu na 2-gim pietrze i w windzie przycisk z 1-ka.
+
+Zasady działania windy:
+• winda jedzie w jednym kierunku dopoki sa wcisniete przyciski (wewnatrz lub na zewnatrz) wzywajace ja na piera połozone dalej w tym kierunku,
+• winda zatrzymuje sie na kazdym pietrze na które jest wzywana,
+• jesli winda dojedzie do momentu, w którym w danym kierunku nie jest juz wzywana, podejmuje decyzje co do dalszego kierunku ruchu:
+– sprawdzamy przyciski wewnatrz windy, jesli jakies sa wcisniete, jedziemy w ich kierunku,
+– sprawdzamy przyciski na zewnatrz windy, jesli jakies sa wcisniete, jedziemy w ich kierunku,
+– w przypadku dwoch wind – wysylamy wyłącznie winde najblizsza lub zmierzajaca już w zadanym kierunku,
+– jesli zadne przyciski nie sa wcisniete winda stoi.
+
+Proszę o napisanie krotkiego programu demonstrującego dzialanie napisanej klasy w postaci dwoch równoległych wind w budynku (wyświetl windy, pobierz przyciski, <wykonaj ruch>, wyświetl windy).
+
+*/
