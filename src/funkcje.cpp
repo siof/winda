@@ -18,6 +18,7 @@
 #include "funkcje.h"
 
 #include <algorithm>
+#include <functional>
 #include <cctype>
 #include <cstdarg>
 #include <cstdio>
